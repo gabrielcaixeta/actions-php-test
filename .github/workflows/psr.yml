@@ -11,17 +11,10 @@ jobs:
   php-cs-fixer:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: PHP CS Fixer
+        uses: StephaneBour/actions-php-cs-fixer@1.0
         with:
-          php-version:
-      - name: Report PHP version
-        run: php -v
-      - name: Validate composer.json and composer.lock
-        run: composer validate
-      - name: Install dependencies
-        run: composer install —prefer-dist —no-progress —no-suggest
-      - name: Run test suite
-        run: vendor/bin/phpunit
+          dir: './app'
     # steps:
     #   - uses: actions/checkout@v2
     #     with:

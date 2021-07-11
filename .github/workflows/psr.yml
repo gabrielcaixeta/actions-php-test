@@ -2,6 +2,8 @@ on:
     push:
         branches-ignore:
             - main
+        paths:
+            - 'app/**'
     workflow_dispatch:
     
 name: Coding Standards

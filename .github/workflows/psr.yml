@@ -1,9 +1,11 @@
 on:
     push:
-        branches:
-            - master
-    pull_request:
-
+        branches-ignore:
+            - main
+        paths:
+            - 'app/**'
+    workflow_dispatch:
+    
 name: Coding Standards
 
 jobs:

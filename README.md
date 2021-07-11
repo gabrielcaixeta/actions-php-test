@@ -5,6 +5,7 @@ Using this features:
 
 * Laravel
 * PHPStan
+* PHPUnit
 
 ## License
 

@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         with:
-          php-version:
+          php-version: "7.2"
       - name: Report PHP version
         run: php -v
       - name: Validate composer.json and composer.lock

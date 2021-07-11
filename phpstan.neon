@@ -1,0 +1,14 @@
+parameters:
+    checkMissingIterableValueType: false
+    excludes_analyse:
+        - public/
+        - scripts/
+
+    inferPrivatePropertyTypeFromConstructor: true
+
+    level: max
+
+    paths:
+        - inc
+        - src
+        - tests

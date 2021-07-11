@@ -4,6 +4,7 @@ Study github actions on php repository
 Using this features:
 
 * Laravel
+* PHPStan
 
 ## License
 

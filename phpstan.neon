@@ -9,6 +9,5 @@ parameters:
     level: max
 
     paths:
-        - inc
-        - src
+        - app
         - tests

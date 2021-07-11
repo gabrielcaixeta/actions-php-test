@@ -5,44 +5,169 @@ on:
     branches: [ main ]
 
 jobs:
-  laravel-tests:
+  dependency-analysis:
+    name: "Dependency Analysis"
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        php: ['7.3', '7.2']
-    name: PHP ${{ matrix.php }}
+        php-version:
+          - 7.2
+          - 7.3
+
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-      with:
-        php-version: ${{ matrix.php }}
-    - uses: actions/checkout@v2
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Generate key
-      run: php artisan key:generate
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
-    - name: Create Database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: vendor/bin/phpunit
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: echo “::set-output name=dir::$(composer config cache-files-dir)”
-    - name: "Cache dependencies installed with composer"
-      uses: actions/cache@v1
-      with:
-        path: ~/.composer/cache
-        key: php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          php-${{ matrix.php-version }}-composer-locked-
-    - name: "Run static analysis with phpstan"
-      run: vendor/bin/phpstan analyze —configuration=phpstan.neon
+      - name: "Checkout"
+        uses: actions/checkout@master
+
+      - name: "Install PHP with extensions"
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: "gd, intl, json, mbstring, pdo"
+
+      - name: "Cache dependencies installed with composer"
+        uses: actions/cache@v1.0.0
+        with:
+          path: ~/.composer/cache
+          key: php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            php-${{ matrix.php-version }}-composer-locked-
+
+      - name: "Install dependencies with composer"
+        run: $(which composer) install
+
+      - name: "Run dependency analysis with security-checker"
+        run: vendor/bin/security-checker security:check composer.lock
+
+      - name: "Run dependency analysis with composer-require-checker"
+        run: vendor/bin/composer-require-checker --config-file=composer-require-checker.json
+
+  static-analysis:
+    name: "Static Analysis"
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - 7.2
+          - 7.3
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@master
+
+      - name: "Install PHP with extensions"
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-version }}
+          pecl: true
+          extensions: "gd, intl, json, mbstring, pdo"
+
+      - name: "Cache dependencies installed with composer"
+        uses: actions/cache@v1
+        with:
+          path: ~/.composer/cache
+          key: php-${{ matrix.php-version }}-composer-locked${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            php-${{ matrix.php-version }}-composer-locked
+
+      - name: "Install dependencies with composer"
+        run: $(which composer) install
+
+      - name: "Run static analysis with phpstan"
+        run: vendor/bin/phpstan analyze --configuration=phpstan.neon
+
+  tests:
+    name: "Tests"
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - 7.2
+          - 7.3
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@master
+
+      - name: "Install PHP with extensions"
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: "gd, intl, json, mbstring, pdo"
+          coverage: "xdebug"
+
+      - name: "Cache dependencies installed with composer"
+        uses: actions/cache@v1
+        with:
+          path: ~/.composer/cache
+          key: php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            php-${{ matrix.php-version }}-composer-locked-
+
+      - name: "Install dependencies with composer"
+        run: $(which composer) install
+
+      - name: "Create build directory"
+        run: mkdir -p build
+
+      - name: "Copy configuration"
+        run: cp src/config.php.dist src/config.php
+
+      - name: "Dump Xdebug filter with phpunit"
+        run: vendor/bin/phpunit --dump-xdebug-filter=build/xdebug-filter.php
+
+      - name: "Run tests with phpunit"
+        run: vendor/bin/phpunit --coverage-clover=build/logs/clover.xml --coverage-text --prepend=build/xdebug-filter.php
+
+      - name: "Download code coverage uploader for Codecov.io"
+        run: curl -s https://codecov.io/bash -o codecov
+
+      - name: "Send code coverage report to Codecov.io"
+        run: bash codecov -t ${{ secrets.CODECOV_TOKEN }}
+
+# Disabled until code covereage up to 100%
+#mutation-test:
+#  name: "Mutation Tests"
+#
+#  runs-on: ubuntu-latest
+#
+#  strategy:
+#    matrix:
+#      php-version:
+#        - 7.2
+#        - 7.3
+
+#
+#  steps:
+#    - name: "Checkout"
+#      uses: actions/checkout@master
+#
+#    - name: "Install PHP with extensions"
+#      uses: shivammathur/setup-php@master
+#      with:
+#        php-version: ${{ matrix.php-version }}
+#        extensions: intl, json, pdo, xdebug
+#        coverage: "xdebug"
+#
+#    - name: "Cache dependencies installed with composer"
+#      uses: actions/cache@v1
+#      with:
+#        path: ~/.composer/cache
+#        key: php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('**/composer.lock') }}
+#        restore-keys: |
+#          php-${{ matrix.php-version }}-composer-locked-
+#
+#    - name: "Install dependencies with composer"
+#      run: $(which composer) install
+#
+#    - name: "Create build directory"
+#      run: mkdir -p build/infection
+#
+#    - name: "Copy configuration"
+#      run: cp src/config.php.dist src/config.php
+#
+#    - name: "Run mutation tests with infection"
+#      run: vendor/bin/infection --ignore-msi-with-no-mutations --min-covered-msi=69 --min-msi=19

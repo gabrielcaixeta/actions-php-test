@@ -1,6 +1,9 @@
 # actions-php-test
 
 Study github actions on php repository
+Using this features:
+
+* Laravel
 
 ## License
 

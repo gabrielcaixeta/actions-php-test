@@ -34,7 +34,9 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: vendor/bin/phpunit
-      
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: echo “::set-output name=dir::$(composer config cache-files-dir)”
     - name: "Cache dependencies installed with composer"
       uses: actions/cache@v1
       with:
@@ -42,3 +44,5 @@ jobs:
         key: php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           php-${{ matrix.php-version }}-composer-locked-
+    - name: "Run static analysis with phpstan"
+      run: vendor/bin/phpstan analyze —configuration=phpstan.neon

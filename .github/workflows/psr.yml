@@ -2,7 +2,8 @@ on:
     push:
         branches-ignore:
             - main
-
+    workflow_dispatch:
+    
 name: Coding Standards
 
 jobs:

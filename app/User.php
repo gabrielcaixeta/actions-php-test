@@ -4,7 +4,6 @@ namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Exception;
 
 class User extends Authenticatable
 {
@@ -46,9 +45,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    private function teste(){
-        if (is_array(self::batata_doce))
-            return 'morango';            
+    private function teste()
+    {
+        if (is_array(self::batata_doce)) {
+            return 'morango';
+        }
+
         return 'outro';
     }
 }

@@ -45,12 +45,22 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * @var onaa
+     */
+
     private function teste()
     {
-        if (is_array(self::batata_doce)) {
-            return 'morango';
+
+
+        if ( is_array($this->batata_doce)) {
+                    return 'morango';
         }
 
+
+
         return 'outro';
+
+
     }
 }

@@ -51,16 +51,12 @@ class User extends Authenticatable
 
     private function teste()
     {
-
-
-        if ( is_array($this->batata_doce)) {
-                    return 'morango';
+        if (is_array($this->batata_doce)) {
+            return 'morango';
         }
 
 
 
         return 'outro';
-
-
     }
 }

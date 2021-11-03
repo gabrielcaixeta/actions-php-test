@@ -7,7 +7,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout source code
+        uses: actions/checkout@v2
       - name: Node.js Setup
         uses: actions/setup-node@v2
         with:
@@ -26,7 +27,7 @@ jobs:
       - name: Create an Archive For Release
         uses: montudor/action-zip@v0.1.0
         with:
-          args: zip -X -r software-bundle.zip . -x ".git/*" "node_modules/*" "tests/*" ".github/*" "storage/" package* phpunit.xml "mobile/node_modules/*" # We excluding git, node_modules, and others not needed in production
+          args: zip -X -r softdesk-bundle.zip . -x ".git/*" "node_modules/*" "tests/*" ".github/*" "storage/" package* phpunit.xml "mobile/node_modules/*" # We excluding git, node_modules, and others not needed in production
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:

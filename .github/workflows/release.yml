@@ -12,3 +12,37 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           bump_version_scheme: norelease
+      - uses: actions/checkout@v2
+      - name: Node.js Setup
+        uses: actions/setup-node@v2
+        with:
+         node-version: 12.x
+      - name: Cache node_modules directory
+        uses: actions/cache@v2
+        id: node_module-cache
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Install NPM packages
+        if: steps.node_modules-cache.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Build frontend
+        run: npm run prod
+      - name: Create an Archive For Release
+        uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -X -r softdesk-bundle.zip . -x ".git/*" "node_modules/*" "tests/*" ".github/*" "storage/" package* phpunit.xml "mobile/node_modules/*" # We excluding git, node_modules, and others not needed in production
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+            name: software-bundle
+            path: software-bundle.zip
+      - name: Upload Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: software-bundle.zip
+          asset_name: software-bundle
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Latest Release"

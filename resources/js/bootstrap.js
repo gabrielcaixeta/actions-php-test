@@ -13,7 +13,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 let teste = "teste";
 
 teste  = 'fdsafdsafdsafdsa';
-teste = 'errewqrewqrewqrew';
 
 
 /**

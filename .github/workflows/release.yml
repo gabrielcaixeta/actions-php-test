@@ -12,7 +12,7 @@ jobs:
       - name: Node.js Setup
         uses: actions/setup-node@v2
         with:
-         node-version: 12.x
+          node-version: 12.x
       - name: Cache node_modules directory
         uses: actions/cache@v2
         id: node_module-cache
@@ -27,12 +27,12 @@ jobs:
       - name: Create an Archive For Release
         uses: montudor/action-zip@v0.1.0
         with:
-          args: zip -X -r softdesk-bundle.zip . -x ".git/*" "node_modules/*" "tests/*" ".github/*" "storage/" package* phpunit.xml "mobile/node_modules/*" # We excluding git, node_modules, and others not needed in production
+          args: zip -X -r demo-bundle.zip . -x ".git/*" "node_modules/*" "tests/*" ".github/*" "storage/" package* phpunit.xml "mobile/node_modules/*" # We excluding git, node_modules, and others not needed in production
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-            name: software-bundle
-            path: software-bundle.zip
+          name: demo-bundle
+          path: demo-bundle.zip
       - name: Create a release version
         uses: rymndhng/release-on-push-action@master
         env:
@@ -42,13 +42,13 @@ jobs:
       - name: Set output
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - run : echo ${{ steps.vars.outputs.tag }}
+      - run: echo ${{ steps.vars.outputs.tag }}
       - name: Upload Release
-        if : ${{ steps.vars.outputs.tag != '' }} 
+        if: ${{ steps.vars.outputs.tag != '' }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: software-bundle.zip
-          asset_name: software-bundle.zip
+          file: demo-bundle.zip
+          asset_name: demo-bundle.zip
           tag: ${{ github.ref }}
           overwrite: true

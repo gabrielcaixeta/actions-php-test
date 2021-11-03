@@ -41,6 +41,8 @@ jobs:
           bump_version_scheme: norelease
           file: software-bundle.zip
           asset_name: software-bundle.zip
+      - run : echo ${{ github.tag }}
+      - run : echo ${{ github.tag_name }}
       - name: Upload Release
         if : ${{ github.tag != '' }} 
         uses: svenstaro/upload-release-action@v2

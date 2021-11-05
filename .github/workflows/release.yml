@@ -55,10 +55,6 @@ jobs:
           LATEST_DATE: ${{ steps.latest_version.outputs.latest_tag_published_at }}
         run: |
           echo "Version $LATEST was released at $LATEST_DATE"
-      - name: Set output
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - run: echo ${{ steps.vars.outputs.tag }}
       - name: Upload Release
         uses: svenstaro/upload-release-action@v2
         with:

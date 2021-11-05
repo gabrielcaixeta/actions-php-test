@@ -43,16 +43,27 @@ jobs:
         with:
           name: demo-bundle
           path: demo-bundle.zip
+      - name: Get Latest Release
+        id: latest_version
+        uses: abatilo/release-info-action@v1.3.0
+        with:
+          owner: gabrielcaixeta
+          repo: actions-php-test
+      - name: Example of consumption of the output
+        env:
+          LATEST: ${{ steps.latest_version.outputs.latest_tag }}
+          LATEST_DATE: ${{ steps.latest_version.outputs.latest_tag_published_at }}
+        run: |
+          echo "Version $LATEST was released at $LATEST_DATE"
       - name: Set output
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       - run: echo ${{ steps.vars.outputs.tag }}
       - name: Upload Release
-        if: ${{ steps.vars.outputs.tag != '' }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: demo-bundle.zip
           asset_name: demo-bundle.zip
-          tag: ${{ github.ref }}
+          tag: echo "$LATEST"
           overwrite: true

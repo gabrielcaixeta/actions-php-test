@@ -12,7 +12,7 @@ window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 let teste = "teste";
 
-teste = "dsafdsafdsafdfwefdsafdsafdas432";
+teste = "dsafdsafdsafdf666666666wefdsafdsafdas432";
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

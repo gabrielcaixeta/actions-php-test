@@ -65,5 +65,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: demo-bundle.zip
           asset_name: demo-bundle.zip
-          tag: ${{ LATEST }}
+          tag: ${{ steps.latest_version.outputs.latest_tag }}
           overwrite: true

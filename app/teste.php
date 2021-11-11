@@ -1,2 +1,6 @@
 <?php
-class teste { private $olamundo;}
+
+class teste
+{
+    private $olamundo;
+}

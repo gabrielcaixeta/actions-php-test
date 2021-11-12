@@ -14,14 +14,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           bump_version_scheme: norelease
+    
+          releaseNumber: ${{ steps.release.outputs.tag_name }}
       - name: Check Output Parameters
         run: |
           echo "Got tag name ${{ steps.release.outputs.tag_name }}"
-          echo "Got release version ${{ steps.release.outputs.version }}"
+          echo "Got release version ${{ steps.release.outputs.version }}"        
+    outputs:
+      sd_version: ${{ steps.release.outputs.version }}
   build:
     needs: [versioning]
     runs-on: ubuntu-latest
     steps:
+      - name: Check release version
+        run: echo "I'm running on ${{ needs.versioning.outputs.sd_version }}"
       - name: Checkout source code
         uses: actions/checkout@v2
       - name: Node.js Setup

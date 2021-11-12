@@ -8,15 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create a release version
+        id: release
         uses: rymndhng/release-on-push-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           bump_version_scheme: norelease
+      - name: Check Output Parameters
+        run: |
+          echo "Got tag name ${{ steps.release.outputs.tag_name }}"
+          echo "Got release version ${{ steps.release.outputs.version }}"
+    outputs:
+      sd_version: ${{ steps.release.outputs.version }}
   build:
     needs: [versioning]
     runs-on: ubuntu-latest
     steps:
+      - name: Check release version
+        run: echo "I'm running on ${{ needs.versioning.outputs.sd_version }}"
       - name: Checkout source code
         uses: actions/checkout@v2
       - name: Node.js Setup
@@ -34,8 +43,6 @@ jobs:
         run: npm install
       - name: Build frontend
         run: npm run prod
-      # - name: Enter a mobile directory
-      #   run: cd mobile
       - name: Cache node_modules mobile directory
         uses: actions/cache@v2
         id: node_module-mobile-cache
@@ -49,8 +56,6 @@ jobs:
       - name: Build mobile
         working-directory: mobile
         run: npm run build
-      # - name: Go back root directory
-      #   run: cd ..
       - name: Create an Archive For Release
         uses: montudor/action-zip@v0.1.0
         with:
@@ -60,17 +65,11 @@ jobs:
         with:
           name: softdesk
           path: softdesk.zip
-      - name: Get Latest Release
-        id: latest_version
-        uses: abatilo/release-info-action@v1.3.0
-        with:
-          owner: soft4ti
-          repo: softdesk
       - name: Upload Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: softdesk.zip
           asset_name: softdesk.zip
-          tag: ${{ steps.latest_version.outputs.latest_tag }}
+          tag: ${{ needs.versioning.outputs.sd_version }}
           overwrite: true

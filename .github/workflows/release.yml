@@ -4,14 +4,29 @@ on:
     branches:
       - main
 jobs:
-  build:
+  versioning:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Create a release version
+        uses: rymndhng/release-on-push-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          bump_version_scheme: norelease
+      - name: Check Output Parameters
+        run: |
+          echo "Got tag name ${{ steps.release.outputs.tag_name }}"
+          echo "Got release version ${{ steps.release.outputs.version }}"
+  build:
+    needs: [versioning]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
       - name: Node.js Setup
         uses: actions/setup-node@v2
         with:
-         node-version: 12.x
+          node-version: 12.x
       - name: Cache node_modules directory
         uses: actions/cache@v2
         id: node_module-cache
@@ -26,26 +41,29 @@ jobs:
       - name: Create an Archive For Release
         uses: montudor/action-zip@v0.1.0
         with:
-          args: zip -X -r softdesk-bundle.zip . -x ".git/*" "node_modules/*" "tests/*" ".github/*" "storage/" package* phpunit.xml "mobile/node_modules/*" # We excluding git, node_modules, and others not needed in production
+          args: zip -X -r demo-bundle.zip . -x ".git/*" "node_modules/*" "tests/*" ".github/*" "storage/" package* phpunit.xml "mobile/node_modules/*" # We excluding git, node_modules, and others not needed in production
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-            name: software-bundle
-            path: software-bundle.zip
-      - name: Create a release version
-        uses: rymndhng/release-on-push-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: demo-bundle
+          path: demo-bundle.zip
+      - name: Get Latest Release
+        id: latest_version
+        uses: abatilo/release-info-action@v1.3.0
         with:
-          bump_version_scheme: norelease
-          file: software-bundle.zip
-          asset_name: software-bundle.zip
-      # - name: Upload Release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     file: software-bundle.zip
-      #     asset_name: software-bundle.zip
-      #     tag: ${{ github.ref }}
-      #     overwrite: true
-      #     body: "Latest Release"
+          owner: gabrielcaixeta
+          repo: actions-php-test
+      - name: Example of consumption of the output
+        env:
+          LATEST: ${{ steps.latest_version.outputs.latest_tag }}
+          LATEST_DATE: ${{ steps.latest_version.outputs.latest_tag_published_at }}
+        run: |
+          echo "Version $LATEST was released at $LATEST_DATE"
+      - name: Upload Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: demo-bundle.zip
+          asset_name: demo-bundle.zip
+          tag: ${{ steps.latest_version.outputs.latest_tag }}
+          overwrite: true

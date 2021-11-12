@@ -2,5 +2,5 @@
 class teste
 {
     private $olamundo;
-    private $fdsafdfdsafdsasa;
+    private $fdasfdsafew;
 }

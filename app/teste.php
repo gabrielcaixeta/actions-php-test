@@ -1,2 +1,6 @@
 <?php
-class teste (){echo 'bulhufa';}
+class teste
+{
+    private $olamundo;
+    private $fdsafdsa;
+}

@@ -1,6 +1,6 @@
 <?php
 class teste
 {
-    private $olamundo;
+    private $olamufdsafdsafdsando;
     private $fdasfdsafew;
 }

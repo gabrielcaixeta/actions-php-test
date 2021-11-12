@@ -13,9 +13,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          bump_version_scheme: norelease
-    
-          releaseNumber: ${{ steps.release.outputs.tag_name }}
+          bump_version_scheme: norelease   
       - name: Check Output Parameters
         run: |
           echo "Got tag name ${{ steps.release.outputs.tag_name }}"

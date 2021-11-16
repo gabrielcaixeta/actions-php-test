@@ -21,6 +21,7 @@ jobs:
     outputs:
       sd_version: ${{ steps.release.outputs.version }}
   build:
+    if: ${{ needs.versioning.outputs.sd_version }}
     needs: [versioning]
     runs-on: ubuntu-latest
     steps:

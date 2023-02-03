@@ -54,7 +54,7 @@ jobs:
           name: demo-bundle
           path: demo-bundle.zip  
       - name: Upload Release
-        uses: svenstaro/upload-release-action@v3
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: demo-bundle.zip

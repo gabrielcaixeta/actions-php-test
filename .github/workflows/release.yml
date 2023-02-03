@@ -28,13 +28,13 @@ jobs:
       - name: Check release version
         run: echo "I'm running on ${{ needs.versioning.outputs.sd_version }}"
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Node.js Setup
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: Cache node_modules directory
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: node_module-cache
         with:
           path: node_modules
@@ -49,12 +49,12 @@ jobs:
         with:
           args: zip -X -r demo-bundle.zip . -x ".git/*" "node_modules/*" "tests/*" ".github/*" "storage/" package* phpunit.xml "mobile/node_modules/*" # We excluding git, node_modules, and others not needed in production
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: demo-bundle
           path: demo-bundle.zip  
       - name: Upload Release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: demo-bundle.zip

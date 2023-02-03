@@ -1,6 +1,6 @@
 <?php
 class teste
 {
-    private $olamufdsafdsafdsafdsafdsafdsando;
+    private $teste_alal;
     private $fdasfdsafew;
 }
